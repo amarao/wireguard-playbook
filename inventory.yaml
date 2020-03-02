@@ -22,3 +22,10 @@ wireguard_clients:
     wg_net: '100.64.99.0/24'
     dependent_group: 'wireguard_servers'
 
+mobile_clients:
+  hosts:
+    s9:
+      ansible_host: 0.0.0.0 # always fail
+      wg_net_offset: 4
+      wg_net: '100.64.99.0/24'
+      dependent_group: 'wireguard_servers'  
