@@ -10,6 +10,8 @@ PostUp = sysctl net.ipv4.conf.wg0.rp_filter=0
 PostUp = sysctl net.ipv4.conf.wg0.forwarding=1
 {% endif %}
 
+# {{ dependent_group }}
+# {{ groups[dependent_group] }}
 {% for peer in groups[dependent_group] %}
 [Peer]
 PublicKey = {{ hostvars[peer].wg_pub_key }}

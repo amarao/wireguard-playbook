@@ -12,6 +12,10 @@
       apt:
         name: [wireguard, wireguard-tools, resolvconf, build-essential]
         state: present
+
+- hosts: wireguard_servers, clients
+  gather_facts: false
+  tasks:
     - name: Extract public key
       delegate_to: localhost
       command: wg pubkey
