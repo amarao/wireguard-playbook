@@ -8,6 +8,7 @@ wireguard_servers:
       dependent_group: wireguard_clients
       static_ip: true
       listen_port: 24021
+      router: true
 
 wireguard_clients:
   hosts:

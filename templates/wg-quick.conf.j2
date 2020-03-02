@@ -2,8 +2,12 @@
 Address = {{ wg_net|next_nth_usable(wg_net_offset) }}
 DNS = {{ wg_net|next_nth_usable(wg_net_offset) }}
 PrivateKey = {{ wg_priv_key }}
-{% if listen_port is defined %}
+{% if listen_port|d(False) %}
 ListenPort = {{ listen_port }}
+{% endif %}
+{% if router|d(False) %}
+PostUp = sysctl net.ipv4.conf.wg0.rp_filter=0
+PostUp = sysctl net.ipv4.conf.wg0.forwarding=1
 {% endif %}
 
 {% for peer in groups[dependent_group] %}
@@ -12,5 +16,10 @@ PublicKey = {{ hostvars[peer].wg_pub_key }}
 {% if hostvars[peer].static_ip|d(False) %}
 Endpoint = {{ hostvars[peer].ansible_default_ipv4.address }}:{{ hostvars[peer].listen_port }}
 {% endif %}
+{% if router|d(False) %}
 AllowedIPs = {{ wg_net|next_nth_usable(hostvars[peer].wg_net_offset) }}/32
+{% else %}
+AllowedIPs = {{ wg_net }}
+PersistentKeepalive = 15
+{% endif %}
 {% endfor %}
