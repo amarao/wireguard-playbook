@@ -1,0 +1,46 @@
+---
+- hosts: wireguard_servers,wireguard_clients
+  gather_facts: true
+  tasks:
+    - name: Check if private key is available
+      assert:
+        that:
+          - wg_priv_key is defined
+        msg: "wg_priv_key is not defined (use hostvars for secrets!)"
+    - name: Install wireguard
+      become: true
+      apt:
+        name: [wireguard, wireguard-tools, resolvconf, build-essential]
+        state: present
+    - name: Extract public key
+      delegate_to: localhost
+      command: wg pubkey
+      args:
+        stdin: '{{ wg_priv_key }}'
+      changed_when: false
+      register: wg_pub_key_stdout
+    - name: Process public key
+      set_fact:
+        wg_pub_key: '{{ wg_pub_key_stdout.stdout }}'
+
+- hosts: wireguard_servers, wireguard_clients
+  become: true
+  gather_facts: true
+  tasks:
+   - name: Configure wg-quick
+     template:
+       src: wg-quick.conf.j2
+       dest: /etc/wireguard/wg0.conf
+       mode: 0600
+     notify: restart wg
+   - name: Enable systemd unit
+     systemd:
+       name: wg-quick@wg0.service
+       state: started
+       enabled: true
+  handlers:
+    - name: restart wg
+      become: true
+      systemd:
+        name: wg-quick@wg0.service
+        state: restarted

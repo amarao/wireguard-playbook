@@ -1,0 +1,16 @@
+[Interface]
+Address = {{ wg_net|next_nth_usable(wg_net_offset) }}
+DNS = {{ wg_net|next_nth_usable(wg_net_offset) }}
+PrivateKey = {{ wg_priv_key }}
+{% if listen_port is defined %}
+ListenPort = {{ listen_port }}
+{% endif %}
+
+{% for peer in groups[dependent_group] %}
+[Peer]
+PublicKey = {{ hostvars[peer].wg_pub_key }}
+{% if hostvars[peer].static_ip|d(False) %}
+Endpoint = {{ hostvars[peer].ansible_default_ipv4.address }}:{{ hostvars[peer].listen_port }}
+{% endif %}
+AllowedIPs = {{ wg_net|next_nth_usable(hostvars[peer].wg_net_offset) }}/32
+{% endfor %}

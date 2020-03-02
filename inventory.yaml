@@ -1,0 +1,23 @@
+
+wireguard_servers:
+  hosts:
+    desunote.ru:
+      ansible_user: root
+      wg_net: '100.64.99.0/24'
+      wg_net_offset: 1
+      dependent_group: wireguard_clients
+      static_ip: true
+      listen_port: 24021
+
+wireguard_clients:
+  hosts:
+    ray:
+      ansible_host: 192.168.0.250
+      wg_net_offset: 2
+    xps13:
+      ansible_connection: local
+      wg_net_offset: 3
+  vars:
+    wg_net: '100.64.99.0/24'
+    dependent_group: 'wireguard_servers'
+
