@@ -22,10 +22,12 @@
       args:
         stdin: '{{ wg_priv_key }}'
       changed_when: false
+      when: wg_pub_key is undefined
       register: wg_pub_key_stdout
     - name: Process public key
       set_fact:
         wg_pub_key: '{{ wg_pub_key_stdout.stdout }}'
+      when: wg_pub_key is undefined
 
 - hosts: wireguard_servers, wireguard_clients
   become: true
