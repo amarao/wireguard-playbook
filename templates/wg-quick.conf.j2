@@ -9,6 +9,7 @@ ListenPort = {{ listen_port }}
 PostUp = sysctl net.ipv4.conf.wg0.rp_filter=0
 PostUp = sysctl net.ipv4.conf.wg0.forwarding=1
 {% endif %}
+MTU=1390
 
 # {{ dependent_group }}
 # {{ groups[dependent_group] }}
